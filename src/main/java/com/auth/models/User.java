@@ -3,7 +3,6 @@ package com.auth.models;
 import lombok.Getter;
 
 import javax.persistence.*;
-import java.util.Collection;
 
 @Entity
 @Table(name = "user_details")

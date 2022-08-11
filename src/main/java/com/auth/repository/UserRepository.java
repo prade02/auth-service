@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
-
+    // TODO: Check SQL injection attack
     @Query(
             value = "SELECT * FROM user_details WHERE user_name = :userName",
             nativeQuery = true
@@ -18,7 +18,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     User findByUsername(@Param("userName") String userName);
 
     @Query(
-            value = "SELECT authority FROM user_role WHERE user_id = :userId",
+            value = "SELECT authority FROM user_role role JOIN user_authority authority ON " +
+                    "role.authority_id = authority.id WHERE role.user_id = :userId",
             nativeQuery = true
     )
     List<String> getUserAuthorities(@Param("userId") int userId);

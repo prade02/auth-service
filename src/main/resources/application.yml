@@ -4,3 +4,7 @@ spring:
     username: postgres
   jackson:
     property-naming-strategy: SNAKE_CASE
+application:
+  jwt:
+    token-prefix: Bearer
+    expires-in-days: 1

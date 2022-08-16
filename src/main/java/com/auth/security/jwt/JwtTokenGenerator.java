@@ -17,27 +17,27 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class JwtTokenGenerator {
 
-  private final JwtSecretKeyGenerator jwtSecretKeyGenerator;
-  private final JwtConfig jwtConfig;
+    private final JwtSecretKeyGenerator jwtSecretKeyGenerator;
+    private final JwtConfig jwtConfig;
 
-  public String generateToken(Authentication authenticationResult) {
-    if (!authenticationResult.isAuthenticated())
-      throw new AccessDeniedException("User is not authenticated but tried to generate JWT token");
-    var authorities =
-        authenticationResult.getAuthorities().stream()
-            .map(GrantedAuthority::getAuthority)
-            .collect(Collectors.toList());
-    return Jwts.builder()
-            .setSubject(authenticationResult.getName())
-            .claim("authorities", authorities)
-            .setIssuedAt(Date.from(Instant.now()))
-            .setExpiration(
-                Date.from(
-                    LocalDateTime.now()
-                        .plusDays(jwtConfig.getExpiresInDays())
-                        .atZone(ZoneId.systemDefault())
-                        .toInstant()))
-            .signWith(jwtSecretKeyGenerator.getSecretKey())
-            .compact();
-  }
+    public String generateToken(Authentication authenticationResult) {
+        if (!authenticationResult.isAuthenticated())
+            throw new AccessDeniedException("User is not authenticated but tried to generate JWT token");
+        var authorities =
+                authenticationResult.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.toList());
+        return Jwts.builder()
+                .setSubject(authenticationResult.getName())
+                .claim("authorities", authorities)
+                .setIssuedAt(Date.from(Instant.now()))
+                .setExpiration(
+                        Date.from(
+                                LocalDateTime.now()
+                                        .plusDays(jwtConfig.getExpiresInDays())
+                                        .atZone(ZoneId.systemDefault())
+                                        .toInstant()))
+                .signWith(jwtSecretKeyGenerator.getSecretKey())
+                .compact();
+    }
 }

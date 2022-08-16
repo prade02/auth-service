@@ -19,30 +19,30 @@ import javax.servlet.http.HttpServletResponse;
 @AllArgsConstructor
 public class JwtUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-  private final AuthenticationManager authenticationManager;
-  private final JwtTokenGenerator jwtTokenGenerator;
-  private final JwtConfig jwtConfig;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenGenerator jwtTokenGenerator;
+    private final JwtConfig jwtConfig;
 
-  @Override
-  @SneakyThrows
-  public Authentication attemptAuthentication(
-      HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-    AuthRequest authRequest =
-        new ObjectMapper().readValue(request.getInputStream(), AuthRequest.class);
-    Authentication authenticationRequest =
-        new UsernamePasswordAuthenticationToken(
-            authRequest.getUsername(), authRequest.getPassword());
-    return authenticationManager.authenticate(authenticationRequest);
-  }
+    @Override
+    @SneakyThrows
+    public Authentication attemptAuthentication(
+            HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        AuthRequest authRequest =
+                new ObjectMapper().readValue(request.getInputStream(), AuthRequest.class);
+        Authentication authenticationRequest =
+                new UsernamePasswordAuthenticationToken(
+                        authRequest.getUsername(), authRequest.getPassword());
+        return authenticationManager.authenticate(authenticationRequest);
+    }
 
-  @Override
-  protected void successfulAuthentication(
-      HttpServletRequest request,
-      HttpServletResponse response,
-      FilterChain chain,
-      Authentication authResult) {
-    response.addHeader(
-        jwtConfig.authorizationHeader(),
-        jwtConfig.getTokenPrefix() + " " + jwtTokenGenerator.generateToken(authResult));
-  }
+    @Override
+    protected void successfulAuthentication(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain chain,
+            Authentication authResult) {
+        response.addHeader(
+                jwtConfig.authorizationHeader(),
+                jwtConfig.getTokenPrefix() + " " + jwtTokenGenerator.generateToken(authResult));
+    }
 }

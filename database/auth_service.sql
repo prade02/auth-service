@@ -12,7 +12,7 @@ CREATE TABLE public.user_role
 (
     id serial NOT NULL,
     user_id integer NOT NULL,
-    authority character varying NOT NULL,
+    authority_id integer NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (user_id)
         REFERENCES public.user_details (id) MATCH SIMPLE
@@ -20,6 +20,21 @@ CREATE TABLE public.user_role
         ON DELETE NO ACTION
         NOT VALID
 );
+
+CREATE TABLE IF NOT EXISTS public.user_authority
+(
+    id serial NOT NULL,
+    authority character varying NOT NULL,
+    description character varying,
+    parent_authority integer,
+    parent_authority_name character varying,
+    CONSTRAINT user_authority_pkey PRIMARY KEY (id),
+    CONSTRAINT user_authority_parent_fkey FOREIGN KEY (parent_authority)
+        REFERENCES public.user_authority (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+)
 
 -- PROCEDURE: public.sp_get_role_hierarchy_expression()
 
@@ -35,7 +50,7 @@ WITH RECURSIVE reachable_roles AS (
 	SELECT uAuthority.id, uAuthority.parent_authority_name, uAuthority.authority FROM user_authority uAuthority INNER JOIN reachable_roles reachable ON
 	uAuthority.parent_authority = reachable.id
 )
-SELECT string_agg(parent_authority_name || ' > ' || authority, ' \n ') as authority_hierarchy FROM reachable_roles WHERE parent_authority_name IS NOT NULL;
+SELECT string_agg(parent_authority_name || ' > ' || authority, ' $$$ ') as authority_hierarchy FROM reachable_roles WHERE parent_authority_name IS NOT NULL;
 $BODY$;
 ALTER PROCEDURE public.sp_get_role_hierarchy_expression()
     OWNER TO postgres;

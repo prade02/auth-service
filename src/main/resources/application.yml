@@ -1,10 +1,12 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/auth_service
+    url: ${AUTH_SERVICE_DB_JDBC_URL}
     username: postgres
+    password: ${AUTH_SERVICE_DB_PASSWORD}
   jackson:
     property-naming-strategy: SNAKE_CASE
 application:
   jwt:
     token-prefix: Bearer
     expires-in-days: 1
+    secret: ${AUTH_SERVICE_JWT_SECRET}

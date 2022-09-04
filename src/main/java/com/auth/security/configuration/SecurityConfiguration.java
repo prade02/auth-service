@@ -2,8 +2,9 @@ package com.auth.security.configuration;
 
 import com.auth.security.ApplicationUserDetailService;
 import com.auth.security.filter.JwtUsernamePasswordAuthenticationFilter;
+import com.auth.security.jwt.JwtConfig;
+import com.auth.security.jwt.JwtTokenGenerator;
 import lombok.AllArgsConstructor;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,21 +12,23 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
-@Configuration
+@Component
 @AllArgsConstructor
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final ApplicationUserDetailService userDetailService;
+    private final JwtTokenGenerator jwtTokenGenerator;
+    private final JwtConfig jwtConfig;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-                .addFilter(new JwtUsernamePasswordAuthenticationFilter(authenticationManager()))
+                .anonymous().disable()
+                .addFilter(new JwtUsernamePasswordAuthenticationFilter(authenticationManager(), jwtTokenGenerator, jwtConfig))
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .httpBasic()
                 .and()
                 .authorizeRequests()
                 .anyRequest()
@@ -33,7 +36,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(daoAuthenticationProvider());
     }
 

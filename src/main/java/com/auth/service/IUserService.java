@@ -6,5 +6,6 @@ import java.util.Collection;
 
 public interface IUserService {
     User findByUsername(String userName);
+
     Collection<String> getUserAuthorities(int userId);
 }
